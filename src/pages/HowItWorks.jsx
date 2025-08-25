@@ -5,33 +5,36 @@ import { motion } from "framer-motion";
 const steps = [
   {
     id: 1,
-    icon: <MapPin className="w-10 h-10 text-blue-600" />,
+    icon: <MapPin className="w-12 h-12 text-blue-600" />,
     title: "Plan Your Trip",
     description:
       "Enter your pickup and destination. Get instant transparent fares and route options tailored to your needs.",
-    color: "from-blue-500 to-indigo-500",
+    iconColor: "text-blue-600",
   },
   {
     id: 2,
-    icon: <Car className="w-10 h-10 text-green-600" />,
+    icon: <Car className="w-12 h-12 text-blue-600" />,
     title: "Choose Your Ride",
     description:
       "Pick a vehicle that suits your style. From budget rides to premium comfort, customize it your way.",
-    color: "from-green-400 to-emerald-500",
+    iconColor: "text-blue-600",
   },
   {
     id: 3,
-    icon: <CheckCircle className="w-10 h-10 text-yellow-600" />,
+    icon: <CheckCircle className="w-12 h-12 text-blue-600" />,
     title: "Confirm & Go",
     description:
       "Pay a small advance, get driver details, and enjoy a smooth travel experience with full transparency.",
-    color: "from-yellow-400 to-orange-500",
+    iconColor: "text-blue-600",
   },
 ];
 
 const HowItWorks = () => {
   return (
-    <section id="how" className="w-full bg-gradient-to-b from-gray-50 to-gray-100 py-20 relative overflow-hidden">
+    <section
+      id="how-it-works-section"
+      className="w-full bg-gray-50 py-20 relative overflow-hidden"
+    >
       <div className="max-w-6xl mx-auto px-6">
         {/* Heading */}
         <motion.div
@@ -55,7 +58,7 @@ const HowItWorks = () => {
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             transition={{ duration: 1.2, delay: 0.4 }}
-            className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-green-400 to-yellow-400 -z-10"
+            className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-blue-600 -z-10"
           ></motion.div>
 
           {steps.map((step, index) => (
@@ -64,15 +67,18 @@ const HowItWorks = () => {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: index * 0.3 }}
-              whileHover={{ scale: 1.05, y: -10 }}
+              whileHover={{ scale: 1.05 }}
               className="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center text-center max-w-xs relative z-10 hover:shadow-2xl transition-all duration-300"
             >
-              {/* Step Circle */}
-              <div
-                className={`w-20 h-20 flex items-center justify-center rounded-full bg-gradient-to-r ${step.color} mb-6 shadow-md`}
+              {/* Step Circle with hover animation */}
+              <motion.div
+                whileHover={{ scale: 1.2, rotate: 15 }}
+                className="w-20 h-20 flex items-center justify-center rounded-full bg-blue-100 mb-6 shadow-md"
               >
-                {step.icon}
-              </div>
+                {React.cloneElement(step.icon, {
+                  className: `w-12 h-12 ${step.iconColor}`,
+                })}
+              </motion.div>
 
               <h3 className="text-xl font-semibold text-gray-800 mb-3">
                 {step.title}

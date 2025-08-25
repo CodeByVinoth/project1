@@ -43,7 +43,7 @@ const Hero = () => {
 
   return (
     <section id="home" className="relative w-full h-[calc(100vh-55px)] overflow-hidden">
-      {/* Background Slider and Text (now in a single container) */}
+      {/* Background Slider and Text */}
       <div className="absolute inset-0 z-0">
         {images.map((img, index) => (
           <img
@@ -55,18 +55,18 @@ const Hero = () => {
             }`}
           />
         ))}
-        {/* Text is now absolutely positioned inside the background container */}
+        {/* Text inside background */}
         <div className="absolute bottom-16 right-4 sm:right-6 md:right-16 text-white text-right w-2/3 sm:w-1/2 md:w-1/3 p-4">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-snug transition-opacity duration-1000">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-snug transition-opacity duration-1000 whitespace-nowrap">
             {texts[current].title}
           </h1>
-          <p className="text-[9px] sm:text-xs md:text-sm lg:text-base transition-opacity duration-1000 mt-2">
+          <p className="text-[9px] sm:text-xs md:text-sm lg:text-base transition-opacity duration-1000 mt-2 whitespace-nowrap">
             {texts[current].desc}
           </p>
         </div>
       </div>
 
-      {/* Booking Form (in a higher z-index container) */}
+      {/* Booking Form */}
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 md:px-6 h-full flex flex-col md:flex-row justify-center md:justify-start items-center md:items-start py-10 md:py-16">
         <div className="flex justify-center md:justify-start w-full sm:w-4/5 md:w-2/3 lg:w-1/2 xl:w-2/5">
           <BookingForm />

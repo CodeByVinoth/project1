@@ -27,7 +27,10 @@ const Newsletter = () => {
   };
 
   return (
-    <section className="w-full pt-10 bg-gradient-to-r from-blue-50 via-white to-blue-50">
+    <section
+      id="contact-section" // ✅ added ID for smooth scroll
+      className="w-full pt-10 bg-gradient-to-r from-blue-50 via-white to-blue-50"
+    >
       <div className="max-w-[1200px] mx-auto px-1 flex flex-col items-center gap-5">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 text-center">
           Stay Connected

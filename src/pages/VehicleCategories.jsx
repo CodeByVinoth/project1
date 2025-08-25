@@ -59,43 +59,44 @@ const VehicleCategories = () => {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {categories.map((cat, index) => (
+        {/* Row 1 */}
+        <div className="grid grid-cols-[60%_40%] gap-6 mb-6 h-[280px]">
+          {categories.slice(0, 2).map((cat) => (
             <motion.div
               key={cat.id}
-              initial={{ opacity: 0, y: 30, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
-              className="relative rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl"
-              style={{ height: "280px" }}
+              className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl cursor-pointer"
             >
               <motion.div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${cat.image})` }}
-                whileHover={{ scale: 1.1, rotate: 1 }}
-                transition={{ duration: 0.6 }}
-              ></motion.div>
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.4 }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                <h3 className="text-lg font-semibold mb-1">{cat.title}</h3>
+                <p className="text-sm">{cat.description}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
+        {/* Row 2 */}
+        <div className="grid grid-cols-[40%_60%] gap-6 h-[280px]">
+          {categories.slice(2, 4).map((cat) => (
+            <motion.div
+              key={cat.id}
+              className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl cursor-pointer"
+            >
               <motion.div
-                className="absolute inset-0 bg-gradient-to-t from-gray-900/70 to-transparent opacity-0"
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              ></motion.div>
-
-              <motion.div
-                className="absolute bottom-6 left-6 right-6 text-white"
-                initial={{ y: 10, opacity: 0 }}
-                whileHover={{ y: -6, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 group-hover:text-blue-400">
-                  {cat.title}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-200 leading-snug">
-                  {cat.description}
-                </p>
-              </motion.div>
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${cat.image})` }}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.4 }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                <h3 className="text-lg font-semibold mb-1">{cat.title}</h3>
+                <p className="text-sm">{cat.description}</p>
+              </div>
             </motion.div>
           ))}
         </div>

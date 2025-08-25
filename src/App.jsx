@@ -13,7 +13,6 @@ import Testimonials from "./pages/Testimonials";
 import Newsletter from "./pages/Newsletter";
 import LoginForm from "./pages/LoginForm";
 import About from "./pages/About";
-import Contact from "./pages/Contact";
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -31,6 +30,7 @@ function App() {
                 <>
                   <Hero />
                   <VehicleCategories />
+                  <About id="about-section" />  {/* ✅ Added ID */}
                   <AboutSection />
                   <HowItWorks />
                   <MobileApp />
@@ -40,8 +40,6 @@ function App() {
                 </>
               }
             />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
 

@@ -8,7 +8,7 @@ const MobileApp = () => {
   return (
     <section className="w-full bg-white sm:py-16" id="about">
       <div className="max-w-[1304px] mx-auto px-6">
-        <div className="bg-gradient-to-r from-blue-100 to-white rounded-[24px] sm:rounded-[36px] p-6 flex flex-col md:flex-row items-center justify-center gap-8">
+        <div className="bg-gradient-to-t from-blue-200 to-white rounded-[24px] sm:rounded-[36px] p-6 flex flex-col md:flex-row items-center justify-center gap-8">
           
           {/* Left content */}
           <motion.div

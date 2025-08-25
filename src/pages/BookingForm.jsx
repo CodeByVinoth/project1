@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import {
   MapPin,
   Calendar,
   Users,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Search,
@@ -33,11 +32,14 @@ const CustomDateAndTimePicker = ({ onClose, onContinue, initialSelection }) => {
     const days = [];
 
     const startDay = firstDayOfMonth.getDay();
-    for (let i = 0; i < startDay; i++) days.push(null);
+    const totalDays = lastDayOfMonth.getDate();
 
-    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+    for (let i = 0; i < startDay; i++) days.push(null);
+    for (let i = 1; i <= totalDays; i++) {
       days.push(new Date(year, month, i));
     }
+    const remainingDays = 42 - days.length; // 6 rows * 7 days = 42
+    for (let i = 0; i < remainingDays; i++) days.push(null);
 
     return {
       month: date.toLocaleString("default", { month: "long" }),
@@ -49,36 +51,39 @@ const CustomDateAndTimePicker = ({ onClose, onContinue, initialSelection }) => {
   const calendar = generateCalendar(currentMonth);
 
   const handleDateClick = (date) => {
-    if (!date || date < new Date().setHours(0, 0, 0, 0)) return;
-    if (dateSelection.startDate && dateSelection.endDate) {
+    if (!date || date.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)) return;
+
+    const { startDate, endDate } = dateSelection;
+
+    if (startDate && endDate) {
+      // If a range is already selected, start a new selection
       setDateSelection({ ...dateSelection, startDate: date, endDate: null });
-    } else if (dateSelection.startDate && date < dateSelection.startDate) {
-      setDateSelection({
-        ...dateSelection,
-        startDate: date,
-        endDate: dateSelection.endDate,
-      });
-    } else if (dateSelection.startDate) {
+    } else if (startDate && date.getTime() > startDate.getTime()) {
+      // Select the end date
       setDateSelection({ ...dateSelection, endDate: date });
+    } else if (startDate && date.getTime() < startDate.getTime()) {
+      // Swap start and end dates if the new date is earlier
+      setDateSelection({ ...dateSelection, startDate: date, endDate: startDate });
     } else {
-      setDateSelection({ ...dateSelection, startDate: date });
+      // First selection
+      setDateSelection({ ...dateSelection, startDate: date, endDate: null });
     }
   };
 
   const isSelected = (date) => {
-    if (!date) return false;
+    if (!date || !dateSelection.startDate) return false;
     const dateOnly = new Date(date.setHours(0, 0, 0, 0));
-    const startOnly = dateSelection.startDate
-      ? new Date(dateSelection.startDate.setHours(0, 0, 0, 0))
-      : null;
-    const endOnly = dateSelection.endDate
-      ? new Date(dateSelection.endDate.setHours(0, 0, 0, 0))
-      : null;
+    const startOnly = new Date(dateSelection.startDate.setHours(0, 0, 0, 0));
+    const endOnly = dateSelection.endDate ? new Date(dateSelection.endDate.setHours(0, 0, 0, 0)) : null;
 
-    if (startOnly && endOnly)
+    if (endOnly) {
       return dateOnly >= startOnly && dateOnly <= endOnly;
-    return startOnly && dateOnly.getTime() === startOnly.getTime();
+    }
+    return dateOnly.getTime() === startOnly.getTime();
   };
+
+  const isStart = (date) => date && dateSelection.startDate && date.setHours(0, 0, 0, 0) === dateSelection.startDate.setHours(0, 0, 0, 0);
+  const isEnd = (date) => date && dateSelection.endDate && date.setHours(0, 0, 0, 0) === dateSelection.endDate.setHours(0, 0, 0, 0);
 
   const handleTimeChange = (e, type) => {
     const newHours = parseFloat(e.target.value);
@@ -87,28 +92,26 @@ const CustomDateAndTimePicker = ({ onClose, onContinue, initialSelection }) => {
   };
 
   const handleContinue = () => {
-    onContinue(dateSelection);
+    if (dateSelection.startDate && dateSelection.endDate) {
+      onContinue(dateSelection);
+    }
   };
 
   const handleReset = () => {
     setDateSelection({
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: null,
+      endDate: null,
       startTime: "06:00 AM",
       endTime: "03:00 PM",
     });
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth(
-      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1)
-    );
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
   };
 
   const handlePreviousMonth = () => {
-    setCurrentMonth(
-      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)
-    );
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
   };
 
   const isPastDate = (date) => {
@@ -116,110 +119,127 @@ const CustomDateAndTimePicker = ({ onClose, onContinue, initialSelection }) => {
     return date.setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0);
   };
 
+  const getCalendarDateClass = (day) => {
+    const isDaySelected = isSelected(day);
+    const isDayStart = isStart(day);
+    const isDayEnd = isEnd(day);
+    const isDayPast = isPastDate(day);
+
+    let baseClass = "p-2 transition-colors duration-200 w-8 h-8 rounded-full flex items-center justify-center font-medium";
+
+    if (!day) return "cursor-default";
+    if (isDayPast) return `${baseClass} text-gray-400 cursor-not-allowed`;
+
+    if (isDayStart && isDayEnd) return `${baseClass} bg-blue-600 text-white`;
+    if (isDayStart) return `${baseClass} bg-blue-600 text-white rounded-r-none rounded-l-lg`;
+    if (isDayEnd) return `${baseClass} bg-blue-600 text-white rounded-l-none rounded-r-lg`;
+
+    if (isDaySelected) return `${baseClass} bg-blue-200 text-gray-800 rounded-none`;
+
+    return `${baseClass} text-gray-800 hover:bg-gray-100`;
+  };
+
+  const getSliderValue = (timeString) => {
+    const [time, ampm] = timeString.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+    if (ampm === "PM" && hours !== 12) {
+        hours += 12;
+    }
+    if (ampm === "AM" && hours === 12) {
+        hours = 0;
+    }
+    return hours + minutes / 60;
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-lg w-[600px] h-[550px]  overflow-hidden">
-      <div className="p-8">
-        {/* Header */}
-        <div className="flex justify-between items-center pb-2">
-          <div className="flex items-center text-2xs font-semibold text-black">
-            <Calendar size={15} className="text-gray-600 mr-1" />
-            <span>
-              {dateSelection.startDate?.toLocaleDateString()} -{" "}
-              {dateSelection.endDate?.toLocaleDateString()}
-            </span>
-          </div>
-          <button
-            onClick={handleReset}
-            className="text-xs font-semibold text-blue-600"
-          >
-            RESET
-          </button>
+    <div className="bg-white rounded-xl shadow-lg w-[500px] h-[580px] overflow-hidden p-6 flex flex-col">
+      <div className="flex justify-between items-center pb-4 border-b border-gray-200">
+        <div className="flex items-center text-xs font-semibold text-black">
+          <Calendar size={15} className="text-gray-600 mr-1" />
+          <span>
+            {dateSelection.startDate?.toLocaleDateString() || "Select Start Date"} -{" "}
+            {dateSelection.endDate?.toLocaleDateString() || "Select End Date"}
+          </span>
         </div>
+        <button
+          onClick={handleReset}
+          className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition"
+        >
+          RESET
+        </button>
+      </div>
 
-        {/* Month controls */}
-        <div className="flex items-center justify-center space-x-4 mb-3">
-          <button
-            onClick={handlePreviousMonth}
-            className="p-1 rounded-full hover:bg-gray-100"
-          >
-            <ChevronLeft size={18} className="text-gray-600" />
-          </button>
-          <h4 className="text-sm font-semibold text-gray-800">
-            {calendar.month} '{calendar.year.toString().slice(-2)}
-          </h4>
-          <button
-            onClick={handleNextMonth}
-            className="p-1 rounded-full hover:bg-gray-100"
-          >
-            <ChevronRight size={18} className="text-gray-600" />
-          </button>
-        </div>
+      <div className="flex items-center justify-center space-x-4 my-6">
+        <button onClick={handlePreviousMonth} className="p-1 rounded-full hover:bg-gray-100">
+          <ChevronLeft size={20} className="text-gray-600" />
+        </button>
+        <h4 className="text-lg font-semibold text-gray-800">
+          {calendar.month} {calendar.year}
+        </h4>
+        <button onClick={handleNextMonth} className="p-1 rounded-full hover:bg-gray-100">
+          <ChevronRight size={20} className="text-gray-600" />
+        </button>
+      </div>
 
-        {/* Calendar grid */}
-        <div className="grid grid-cols-7 text-center text-xs text-gray-500 font-medium mb-2">
-          <span>S</span>
-          <span>M</span>
-          <span>T</span>
-          <span>W</span>
-          <span>T</span>
-          <span>F</span>
-          <span>S</span>
-        </div>
-        <div className="grid grid-cols-7 text-center text-sm">
-          {calendar.days.map((day, index) => (
+      <div className="grid grid-cols-7 text-center text-xs text-gray-500 font-medium mb-2">
+        {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+          <span key={day}>{day}</span>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 text-center text-sm flex-1">
+        {calendar.days.map((day, index) => (
+          <div key={index} className="flex justify-center items-center">
             <button
-              key={index}
               onClick={() => handleDateClick(day)}
-              className={`p-1 transition-colors rounded-full ${
-                day
-                  ? isSelected(day)
-                    ? "bg-blue-600 text-white font-bold"
-                    : isPastDate(day)
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-gray-800 hover:bg-gray-100"
-                  : "cursor-default"
-              }`}
+              className={getCalendarDateClass(day)}
               disabled={!day || isPastDate(day)}
             >
               {day ? day.getDate() : ""}
             </button>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
 
-        {/* Time */}
-        <div className="mt-4">
-          <label className="text-sm font-medium text-gray-800">
-            Start Time
-          </label>
+      <div className="mt-6 space-y-4">
+        <div>
+          <div className="flex justify-between items-center mb-1">
+            <label className="text-sm font-medium text-gray-800">Start Time</label>
+            <span className="text-sm font-semibold text-blue-600">{dateSelection.startTime}</span>
+          </div>
           <input
             type="range"
             min="6"
             max="21"
             step="0.25"
-            value={parseInt(dateSelection.startTime.split(":")[0])}
+            value={getSliderValue(dateSelection.startTime)}
             onChange={(e) => handleTimeChange(e, "startTime")}
-            className="w-full"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
           />
-          <label className="text-sm font-medium text-gray-800">End Time</label>
+        </div>
+        <div>
+          <div className="flex justify-between items-center mb-1">
+            <label className="text-sm font-medium text-gray-800">End Time</label>
+            <span className="text-sm font-semibold text-blue-600">{dateSelection.endTime}</span>
+          </div>
           <input
             type="range"
             min="6"
             max="21"
             step="0.25"
-            value={parseInt(dateSelection.endTime.split(":")[0])}
+            value={getSliderValue(dateSelection.endTime)}
             onChange={(e) => handleTimeChange(e, "endTime")}
-            className="w-full"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
           />
         </div>
+      </div>
 
-        <div className="mt-5">
-          <button
-            onClick={handleContinue}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition"
-          >
-            CONTINUE
-          </button>
-        </div>
+      <div className="mt-6 pt-4 border-t border-gray-200">
+        <button
+          onClick={handleContinue}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-sm hover:bg-blue-700 transition"
+        >
+          CONTINUE
+        </button>
       </div>
     </div>
   );
@@ -322,7 +342,7 @@ const BookingForm = () => {
 
   const [dateSelection, setDateSelection] = useState({
     startDate: new Date(),
-    endDate: new Date(),
+    endDate: null,
     startTime: "06:00 AM",
     endTime: "03:00 PM",
   });
@@ -359,7 +379,7 @@ const BookingForm = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-md relative mx-auto mt-6">
+    <div className="bg-white rounded-xl p-7 h-[580px] w-[500px] shadow-md relative mx-auto mt-0">
       <h3 className="text-center pb-3 text-lg font-semibold text-black">
         Your Trip, Our Responsibility
       </h3>
@@ -368,7 +388,7 @@ const BookingForm = () => {
         {/* Destination */}
         <div>
           <label className="block text-sm mb-1">Enter Destination</label>
-          <div className="bg-gray-100 flex items-center gap-2 p-2 rounded-lg">
+          <div className="bg-gray-100 flex items-center gap-2 p-3 rounded-lg">
             <MapPin size={16} className="text-gray-500" />
             <input
               type="text"
@@ -386,23 +406,29 @@ const BookingForm = () => {
         <div>
           <label className="block text-sm mb-1">Trip Dates</label>
           <div
-            className="bg-gray-100 p-2 rounded-lg flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 p-3 rounded-lg flex items-center gap-2 cursor-pointer"
             onClick={() => setShowCalendar(true)}
           >
             <Calendar size={16} className="text-gray-500" />
             <span className="text-sm">
-              {dateSelection.startDate?.toLocaleDateString()} -{" "}
-              {dateSelection.endDate?.toLocaleDateString()}
+              {dateSelection.startDate
+                ? dateSelection.startDate?.toLocaleDateString()
+                : "Select Start Date"}{" "}
+              -{" "}
+              {dateSelection.endDate
+                ? dateSelection.endDate?.toLocaleDateString()
+                : "Select End Date"}
             </span>
           </div>
         </div>
 
         {/* Pickup & Drop */}
+        <label className="block text-sm mb-1">Pickup & Drop location</label>
         <div className="flex gap-3">
           <input
             type="text"
             placeholder="Pickup Point"
-            className="bg-gray-100 flex-1 p-2 rounded-lg text-sm cursor-pointer"
+            className="bg-gray-100 flex-1 p-3 rounded-lg text-sm cursor-pointer"
             value={formData.pickupLocation}
             readOnly
             onClick={() => handleLocationClick("pickup")}
@@ -410,7 +436,7 @@ const BookingForm = () => {
           <input
             type="text"
             placeholder="Drop Point"
-            className="bg-gray-100 flex-1 p-2 rounded-lg text-sm cursor-pointer"
+            className="bg-gray-100 flex-1 p-3 rounded-lg text-sm cursor-pointer"
             value={formData.dropLocation}
             readOnly
             onClick={() => handleLocationClick("drop")}
@@ -422,8 +448,10 @@ const BookingForm = () => {
           <button
             type="button"
             onClick={() => setTripType("single")}
-            className={`flex-1 py-2 text-sm ${
-              tripType === "single" ? "bg-blue-600 text-white" : ""
+            className={`flex-1 py-3 text-sm transition ${
+              tripType === "single"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-800"
             }`}
           >
             Single
@@ -431,28 +459,33 @@ const BookingForm = () => {
           <button
             type="button"
             onClick={() => setTripType("round")}
-            className={`flex-1 py-2 text-sm ${
-              tripType === "round" ? "bg-blue-600 text-white" : ""
+            className={`flex-1 py-3 text-sm transition ${
+              tripType === "round"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-800"
             }`}
           >
             Round
           </button>
         </div>
         {/* Passengers */}
-        <input
-          type="number"
-          min="1"
-          placeholder="Enter number of passengers"
-          className="w-full bg-gray-100 p-2 rounded-lg text-sm"
-          value={formData.passengers}
-          onChange={(e) =>
-            setFormData({ ...formData, passengers: e.target.value })
-          }
-        />
+        <div className="flex items-center bg-gray-100 p-3 rounded-lg gap-2">
+          <Users size={16} className="text-gray-500" />
+          <input
+            type="number"
+            min="1"
+            placeholder="Enter number of passengers"
+            className="w-full bg-transparent text-sm outline-none"
+            value={formData.passengers}
+            onChange={(e) =>
+              setFormData({ ...formData, passengers: e.target.value })
+            }
+          />
+        </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg"
+          className="w-full bg-blue-600 text-white text-sm py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
         >
           Start Trip
         </button>
@@ -461,7 +494,7 @@ const BookingForm = () => {
       {/* Calendar Overlay */}
       {showCalendar && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-9"
           onClick={() => setShowCalendar(false)}
         >
           <div onClick={(e) => e.stopPropagation()}>

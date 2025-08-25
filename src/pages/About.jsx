@@ -2,9 +2,13 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Globe, Target, Heart } from "lucide-react";
 import abo from "../assets/about.png";
+
 const AboutSection = () => {
   return (
-    <section className="relative bg-white overflow-hidden py-20 px-4 lg:px-16">
+    <section
+      id="about-section"   // ✅ added ID for smooth scroll
+      className="relative bg-white overflow-hidden py-20 px-4 lg:px-16"
+    >
       {/* Decorative SVG behind */}
       <div className="absolute inset-0 pointer-events-none">
         <svg
@@ -49,7 +53,6 @@ const AboutSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="w-full h-64 bg-blue-100 rounded-2xl"
         >
-          {/* Placeholder – swap with your actual image */}
           <img
             src={abo}
             alt="Trendra illustration"
