@@ -36,95 +36,65 @@ const VehicleCategories = () => {
     },
   ];
 
-  const cardVariants = {
-    initial: { opacity: 0, y: 50, scale: 0.95 },
-    animate: (index) => ({
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.8,
-        delay: index * 0.2,
-        ease: [0.6, 0.05, -0.01, 0.9],
-      },
-    }),
-    hover: {
-      scale: 1.05,
-      y: -10,
-      transition: { type: "spring", stiffness: 300, damping: 10 },
-    },
-  };
-
-  const imageVariants = {
-    hover: {
-      scale: 1.2,
-      transition: { duration: 0.8, ease: [0.6, 0.05, -0.01, 0.9] },
-    },
-  };
-
-  const textVariants = {
-    initial: { y: "100%", opacity: 0 },
-    hover: { y: "0%", opacity: 1, transition: { duration: 0.5, ease: "easeOut" } },
-  };
-
   return (
-    <section className="w-full bg-white py-20">
-      <div className="max-w-[1304px] mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-16">
+    <section className="w-full bg-white py-16">
+      <div className="max-w-[1304px] mx-auto px-4">
+        <div className="text-center mb-14">
           <motion.h2
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="text-4xl font-extrabold text-gray-900 tracking-tight"
+            transition={{ duration: 0.8 }}
+            className="text-[28px] sm:text-[32px] font-semibold text-gray-900 mb-3 tracking-tight"
           >
             Find the Perfect Ride for Every Journey
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed"
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-sm sm:text-base text-gray-600 max-w-[900px] mx-auto leading-relaxed"
           >
             From cozy sedans to spacious Travellers, choose a vehicle that fits
             your trip and style — with extra features to make it truly yours.
           </motion.p>
         </div>
 
-        {/* Vehicle Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {categories.map((cat, index) => (
             <motion.div
               key={cat.id}
-              className="relative rounded-2xl overflow-hidden cursor-pointer group"
-              style={{ aspectRatio: "1 / 1" }}
-              variants={cardVariants}
-              initial="initial"
-              whileInView="animate"
-              whileHover="hover"
-              custom={index}
-              viewport={{ once: true, amount: 0.5 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
+              className="relative rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl"
+              style={{ height: "280px" }}
             >
-              {/* Vehicle Image */}
-              <motion.img
-                src={cat.image}
-                alt={cat.title}
-                className="w-full h-full object-cover"
-                variants={imageVariants}
-              />
-
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 to-transparent"></div>
-
-              {/* Text Slide-up */}
               <motion.div
-                className="absolute bottom-6 left-6 right-6 text-white overflow-hidden"
-                variants={textVariants}
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${cat.image})` }}
+                whileHover={{ scale: 1.1, rotate: 1 }}
+                transition={{ duration: 0.6 }}
+              ></motion.div>
+
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-t from-gray-900/70 to-transparent opacity-0"
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              ></motion.div>
+
+              <motion.div
+                className="absolute bottom-6 left-6 right-6 text-white"
+                initial={{ y: 10, opacity: 0 }}
+                whileHover={{ y: -6, opacity: 1 }}
+                transition={{ duration: 0.5 }}
               >
-                <h3 className="text-2xl font-semibold mb-2">{cat.title}</h3>
-                <p className="text-base text-gray-200 leading-snug">{cat.description}</p>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 group-hover:text-blue-400">
+                  {cat.title}
+                </h3>
+                <p className="text-sm sm:text-base text-gray-200 leading-snug">
+                  {cat.description}
+                </p>
               </motion.div>
             </motion.div>
           ))}

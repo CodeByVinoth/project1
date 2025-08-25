@@ -20,10 +20,10 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen relative">
+      <div className="min-h-screen flex flex-col relative">
         <Header onLoginClick={() => setShowLogin(true)} />
 
-        <main id="main-content">
+        <main id="main-content" className="flex-grow">
           <Routes>
             <Route
               path="/"
