@@ -1,31 +1,31 @@
 import React from "react";
-import { MapPin, Car, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
+
+import ab1 from "../assets/ab1.png";
+import ab2 from "../assets/ab2.png";
+import ab3 from "../assets/ab3.png";
 
 const steps = [
   {
     id: 1,
-    icon: <MapPin className="w-12 h-12 text-blue-600" />,
+    icon: <img src={ab1} alt="Plan Your Trip" className="w-16 h-16 object-contain" />,
     title: "Plan Your Trip",
     description:
       "Enter your pickup and destination. Get instant transparent fares and route options tailored to your needs.",
-    iconColor: "text-blue-600",
   },
   {
     id: 2,
-    icon: <Car className="w-12 h-12 text-blue-600" />,
+    icon: <img src={ab2} alt="Choose Your Ride" className="w-16 h-16 object-contain" />,
     title: "Choose Your Ride",
     description:
       "Pick a vehicle that suits your style. From budget rides to premium comfort, customize it your way.",
-    iconColor: "text-blue-600",
   },
   {
     id: 3,
-    icon: <CheckCircle className="w-12 h-12 text-blue-600" />,
+    icon: <img src={ab3} alt="Confirm & Go" className="w-16 h-16 object-contain" />,
     title: "Confirm & Go",
     description:
       "Pay a small advance, get driver details, and enjoy a smooth travel experience with full transparency.",
-    iconColor: "text-blue-600",
   },
 ];
 
@@ -75,9 +75,7 @@ const HowItWorks = () => {
                 whileHover={{ scale: 1.2, rotate: 15 }}
                 className="w-20 h-20 flex items-center justify-center rounded-full bg-blue-100 mb-6 shadow-md"
               >
-                {React.cloneElement(step.icon, {
-                  className: `w-12 h-12 ${step.iconColor}`,
-                })}
+                {step.icon}
               </motion.div>
 
               <h3 className="text-xl font-semibold text-gray-800 mb-3">

@@ -9,18 +9,7 @@ const AboutSection = () => {
       id="about-section"   // ✅ added ID for smooth scroll
       className="relative bg-white overflow-hidden py-20 px-4 lg:px-16"
     >
-      {/* Decorative SVG behind */}
-      <div className="absolute inset-0 pointer-events-none">
-        <svg
-          className="absolute left-full transform -translate-x-1/3 -translate-y-1/4 opacity-20"
-          width="600"
-          height="600"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="300" cy="300" r="300" fill="#0566E5" />
-        </svg>
-      </div>
+      
 
       <div className="relative max-w-7xl mx-auto grid items-center lg:grid-cols-2 gap-12">
         {/* Text Column */}

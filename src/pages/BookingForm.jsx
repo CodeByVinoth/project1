@@ -379,7 +379,7 @@ const BookingForm = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl p-7 h-[580px] w-[500px] shadow-md relative mx-auto mt-0">
+    <div className="bg-white rounded-xl p-7 h-[550px] w-[490px] shadow-md relative mx-auto mt-0">
       <h3 className="text-center pb-3 text-lg font-semibold text-black">
         Your Trip, Our Responsibility
       </h3>

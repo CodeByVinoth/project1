@@ -26,10 +26,16 @@ const Newsletter = () => {
     visible: { scale: 1, opacity: 1, transition: { duration: 0.5 } },
   };
 
+  const buttonVariants = {
+    rest: { scale: 1 },
+    hover: { scale: 1.05 },
+    tap: { scale: 0.95 },
+  };
+
   return (
     <section
       id="contact-section" // ✅ added ID for smooth scroll
-      className="w-full pt-10 bg-gradient-to-r from-blue-50 via-white to-blue-50"
+      className="w-full pt-8 pb-8 bg-gradient-to-t from-blue-50 via-white to-blue-50"
     >
       <div className="max-w-[1200px] mx-auto px-1 flex flex-col items-center gap-5">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 text-center">
@@ -64,9 +70,11 @@ const Newsletter = () => {
                 </div>
                 <motion.button
                   type="submit"
-                  className="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform w-full sm:w-auto"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-xl shadow-lg w-full sm:w-auto"
+                  variants={buttonVariants}
+                  initial="rest"
+                  whileHover="hover"
+                  whileTap="tap"
                 >
                   Subscribe
                 </motion.button>
@@ -82,10 +90,18 @@ const Newsletter = () => {
                 exit={{ opacity: 0, scale: 0.8 }}
               >
                 <motion.div
-                  className="w-8 h-8 rounded-full border-4 border-t-4 border-blue-500 border-t-transparent animate-spin"
-                  transition={{ repeat: Infinity, duration: 1 }}
+                  className="w-8 h-8 rounded-full border-4 border-t-4 border-blue-500 border-t-transparent"
+                  animate={{ rotate: 360 }}
+                  transition={{ ease: "linear", duration: 1, repeat: Infinity }}
                 />
-                <span className="text-xl font-medium">Sending...</span>
+                <motion.span
+                  className="text-xl font-medium"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  Sending...
+                </motion.span>
               </motion.div>
             )}
 
@@ -104,12 +120,22 @@ const Newsletter = () => {
                 >
                   <FiCheckCircle className="text-green-500 text-6xl" />
                 </motion.div>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-800">
+                <motion.h3
+                  className="text-2xl md:text-3xl font-bold text-gray-800"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
                   You're All Set! 🎉
-                </h3>
-                <p className="text-gray-600">
+                </motion.h3>
+                <motion.p
+                  className="text-gray-600"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
                   Thanks for subscribing. Check your inbox for our first update!
-                </p>
+                </motion.p>
               </motion.div>
             )}
           </AnimatePresence>
